@@ -17,11 +17,15 @@ public class GatewayConfig {
 	@Bean
 	public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
 
-		http.csrf(csrf -> csrf.disable()).authorizeExchange(auth -> auth
-				.pathMatchers("/", "/index.html", "/assets/**", "/*.js","/*.css","/*.ico").permitAll().anyExchange().authenticated())
-				.formLogin(Customizer.withDefaults());
+		 http
+        .csrf(csrf -> csrf.disable())
+        .authorizeExchange(auth -> auth
+            .pathMatchers("/login").permitAll()
+            .anyExchange().authenticated()
+        )
+        .formLogin(Customizer.withDefaults());
 
-		return http.build();
+    return http.build();
 	}
 
 	@Bean
