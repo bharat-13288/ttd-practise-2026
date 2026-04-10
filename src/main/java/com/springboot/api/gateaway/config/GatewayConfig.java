@@ -2,30 +2,31 @@ package com.springboot.api.gateaway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 
 @Configuration
 public class GatewayConfig {
 	@Bean
-	public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		
+		
 
-		 http
-        .csrf(csrf -> csrf.disable())
-        .authorizeExchange(auth -> auth
-            .pathMatchers("/login").permitAll()
-            .anyExchange().authenticated()
-        )
-        .formLogin(Customizer.withDefaults());
+		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+				.requestMatchers("/", "/index.html", "/assets/**", "/*.js","/*.css","/*.ico").permitAll().anyRequest().authenticated())
+				.formLogin(form -> form
+		                .defaultSuccessUrl("/home", true)
+		                .permitAll()
+		            )
+		            .logout(logout -> logout.permitAll());
 
-    return http.build();
+		return http.build();
 	}
 
 	@Bean
@@ -34,13 +35,16 @@ public class GatewayConfig {
 	}
 
 	@Bean
-	public MapReactiveUserDetailsService  userDetailsService(PasswordEncoder encoder) {
+	 public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
 
-		UserDetails user = User.builder().username("ttd.#.@.$").password(encoder.encode("Darshan@@##@@@")).roles("USER").build();
+        UserDetails user = User.builder()
+                .username("ttd.#.@.$")
+                .password(encoder.encode("Darshan@@##@@@"))
+                .roles("USER")
+                .build();
 
-		return new MapReactiveUserDetailsService (user);
-	}
-
+        return new InMemoryUserDetailsManager(user);
+    }
 //	@Controller
 //	public class AngularForwardController {
 //		@RequestMapping(value = { "/{path:[^\\.]*}", "/**/{path:[^\\.]*}" })
