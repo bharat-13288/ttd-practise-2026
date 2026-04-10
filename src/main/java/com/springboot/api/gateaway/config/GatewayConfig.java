@@ -21,7 +21,7 @@ public class GatewayConfig {
 		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
 				.requestMatchers("/", "/index.html", "/assets/**", "/*.js","/*.css","/*.ico").permitAll().anyRequest().authenticated())
 				.formLogin(form -> form
-		                .defaultSuccessUrl("/home", true)
+		                .defaultSuccessUrl("/", true)
 		                .permitAll()
 		            )
 		            .logout(logout -> logout.permitAll());
